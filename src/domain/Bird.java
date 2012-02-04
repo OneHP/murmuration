@@ -7,6 +7,8 @@ import com.jme3.scene.shape.Line;
 
 public class Bird extends Geometry{
 
+	private static final float BIRD_TOP_SPEED = 20;
+	
 	private Vector3f location;
 	private Vector3f direction;
 	private float speed;
@@ -35,4 +37,9 @@ public class Bird extends Geometry{
 		return this.geometry;
 	}
 	
+	public void update(float tpf){
+		Vector3f movement = direction.mult(tpf*BIRD_TOP_SPEED);
+		this.location.add(movement);
+		this.geometry.move(movement);
+	}
 }

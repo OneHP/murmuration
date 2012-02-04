@@ -48,7 +48,9 @@ public class Main extends SimpleApplication {
 
     @Override
     public void simpleUpdate(float tpf) {
-    	
+    	 for(Bird bird : birds){
+    		 bird.update(tpf);
+    	}
     }
 
     @Override
