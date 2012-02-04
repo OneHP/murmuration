@@ -1,5 +1,6 @@
 package domain;
 
+import com.jme3.material.Material;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Line;
@@ -11,12 +12,13 @@ public class Bird extends Geometry{
 	private float speed;
 	private Geometry geometry;
 	
-	public Bird(Vector3f location, Vector3f direction, float speed) {
+	public Bird(Vector3f location, Vector3f direction, float speed, Material material) {
 		super();
 		this.location = location;
 		this.direction = direction;
 		this.speed = speed;
-		geometry = new Geometry("bird", makeView());
+		this.geometry = new Geometry("bird", makeView());
+		this.geometry.setMaterial(material);
 	}
 	
 	private Line makeView(){

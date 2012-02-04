@@ -1,5 +1,8 @@
 package mygame;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.jme3.app.SimpleApplication;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
@@ -15,6 +18,8 @@ import domain.Bird;
  */
 public class Main extends SimpleApplication {
 
+	private List<Bird> birds;
+	
     public static void main(String[] args) {
         Main app = new Main();
         app.start();
@@ -32,11 +37,13 @@ public class Main extends SimpleApplication {
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setColor("Color", ColorRGBA.White);
     	
-        Bird bird = new Bird(Vector3f.ZERO, new Vector3f(0.1f, 0, 0), 0);
-        Geometry geometry = bird.getGeometry();
-        geometry.setMaterial(mat);
+        birds = new ArrayList<>();
+        Bird testBird = new Bird(Vector3f.ZERO, new Vector3f(0.1f, 0, 0), 0, mat);
+        birds.add(testBird);
 
-        rootNode.attachChild(geometry);
+        for(Bird bird : birds){
+        	rootNode.attachChild(bird.getGeometry());
+        }
     }
 
     @Override
