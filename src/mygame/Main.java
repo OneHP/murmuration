@@ -2,6 +2,7 @@ package mygame;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.material.Material;
@@ -26,29 +27,32 @@ public class Main extends SimpleApplication {
 		Vector3f up = new Vector3f(0, 1, 0);
 		this.getCamera().lookAt(Vector3f.ZERO, up);
 
-		mouseInput.setCursorVisible(true);
-		inputManager.clearMappings();
+		this.mouseInput.setCursorVisible(true);
+		this.inputManager.clearMappings();
 
-		Material mat = new Material(assetManager,
+		Material mat = new Material(this.assetManager,
 				"Common/MatDefs/Misc/Unshaded.j3md");
 		mat.setColor("Color", ColorRGBA.White);
 
-		birds = new ArrayList<>();
+		Random random = new Random();
+
+		this.birds = new ArrayList<>();
 		for (int i = 0; i < 100; i++) {
-			Bird testBird = new Bird(Vector3f.ZERO, new Vector3f(0.1f, 0, 0),
-					0, mat);
-			birds.add(testBird);
+			Bird testBird = new Bird(new Vector3f(0, 0, 0), new Vector3f(0.1f,
+					0, 0), 0, mat);
+			this.birds.add(testBird);
 		}
 
-		for (Bird bird : birds) {
-			rootNode.attachChild(bird.getGeometry());
+		for (Bird bird : this.birds) {
+			this.rootNode.attachChild(bird.getGeometry());
 		}
+
 	}
 
 	@Override
 	public void simpleUpdate(float tpf) {
-		for (Bird bird : birds) {
-			bird.update(tpf);
+		for (Bird bird : this.birds) {
+			bird.update(this.birds, tpf);
 		}
 	}
 
