@@ -34,18 +34,11 @@ public class Main extends SimpleApplication {
 		mat.setColor("Color", ColorRGBA.White);
 
 		birds = new ArrayList<>();
-		Bird testBird = new Bird(Vector3f.ZERO, new Vector3f(0.1f, 0, 0), 0,
-				mat);
-		birds.add(testBird);
-		Bird testBird2 = new Bird(Vector3f.ZERO, new Vector3f(0.1f, 0, 0), 0,
-				mat);
-		birds.add(testBird2);
-		Bird testBird3 = new Bird(Vector3f.ZERO, new Vector3f(0.1f, 0, 0), 0,
-				mat);
-		birds.add(testBird3);
-		Bird testBird4 = new Bird(Vector3f.ZERO, new Vector3f(0.1f, 0, 0), 0,
-				mat);
-		birds.add(testBird4);
+		for (int i = 0; i < 100; i++) {
+			Bird testBird = new Bird(Vector3f.ZERO, new Vector3f(0.1f, 0, 0),
+					0, mat);
+			birds.add(testBird);
+		}
 
 		for (Bird bird : birds) {
 			rootNode.attachChild(bird.getGeometry());

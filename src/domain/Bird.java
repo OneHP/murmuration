@@ -11,9 +11,9 @@ import com.jme3.scene.shape.Line;
 public class Bird {
 
 	private static final float BIRD_TOP_SPEED = 20;
-	private static final float BIRD_TURN_SPEED = 8;
-	private static final float BIRD_TURN_CHANCE = 0.5f;
-	private static final float BIRD_SWITCH_CHANCE = 0.999f;
+	private static final float BIRD_TURN_SPEED = 5;
+	private static final float BIRD_TURN_CHANCE = 0.3f;
+	private static final float BIRD_SWITCH_CHANCE = 0.9999f;
 
 	private final Vector3f location;
 	private Vector3f direction;
@@ -55,13 +55,16 @@ public class Bird {
 
 	private void turn(float tpf) {
 		float r = random.nextFloat();
-		if (r > BIRD_TURN_CHANCE) {
+		boolean turnBird = r * tpf * 1000 > BIRD_TURN_CHANCE;
+		boolean switchBird = r * tpf * 1000 > BIRD_SWITCH_CHANCE;
+
+		if (turnBird) {
 			float turnValue = BIRD_TURN_SPEED * r * turnDirection * tpf;
 			Quaternion quaternion = new Quaternion(new float[] { 0, 0,
 					turnValue });
 			geometry.rotate(quaternion);
 			direction = quaternion.mult(direction);
-			if (r > BIRD_SWITCH_CHANCE) {
+			if (switchBird) {
 				turnDirection *= -1;
 			}
 		}
