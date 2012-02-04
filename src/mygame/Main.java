@@ -6,7 +6,6 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.scene.Geometry;
-import com.jme3.scene.shape.Line;
 
 import domain.Bird;
 
@@ -29,20 +28,20 @@ public class Main extends SimpleApplication {
     	
     	this.mouseInput.setCursorVisible(true);
         this.inputManager.clearMappings();
-    	
-        Bird bird = new Bird(Vector3f.ZERO, new Vector3f(0.1f, 0, 0), 0);
-        Geometry geom = new Geometry("Line", bird.getView());
-
+        
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setColor("Color", ColorRGBA.White);
-        geom.setMaterial(mat);
+    	
+        Bird bird = new Bird(Vector3f.ZERO, new Vector3f(0.1f, 0, 0), 0);
+        Geometry geometry = bird.getGeometry();
+        geometry.setMaterial(mat);
 
-        rootNode.attachChild(geom);
+        rootNode.attachChild(geometry);
     }
 
     @Override
     public void simpleUpdate(float tpf) {
-        //TODO: add update code
+    	
     }
 
     @Override
