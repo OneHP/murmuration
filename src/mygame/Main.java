@@ -23,11 +23,11 @@ public class Main extends SimpleApplication {
     @Override
     public void simpleInitApp() {
     	
-    	Line line = new Line(Vector3f.ZERO, new Vector3f(1, 1, 1));
+    	Line line = new Line(Vector3f.ZERO, new Vector3f(0.1f, 0, 0));
         Geometry geom = new Geometry("Line", line);
 
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat.setColor("Color", ColorRGBA.Blue);
+        mat.setColor("Color", ColorRGBA.White);
         geom.setMaterial(mat);
 
         rootNode.attachChild(geom);
