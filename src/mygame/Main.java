@@ -6,7 +6,6 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.scene.Geometry;
-import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Line;
 
 /**
@@ -22,6 +21,12 @@ public class Main extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {
+    	
+    	Vector3f up = new Vector3f(0,1,0);
+    	this.getCamera().lookAt(Vector3f.ZERO, up);
+    	
+    	this.mouseInput.setCursorVisible(true);
+        this.inputManager.clearMappings();
     	
     	Line line = new Line(Vector3f.ZERO, new Vector3f(0.1f, 0, 0));
         Geometry geom = new Geometry("Line", line);
