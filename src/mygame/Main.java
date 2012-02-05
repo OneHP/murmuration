@@ -34,8 +34,8 @@ public class Main extends SimpleApplication {
 
 		this.birds = new ArrayList<Bird>();
 		for (int i = 0; i < 100; i++) {
-			Bird testBird = new Bird(
-					new Vector3f(5 - i * 0.1f, 5 - i * 0.1f, 0), i, 0, mat);
+			Bird testBird = new Bird(new Vector3f(5 - i * 0.1f, 5 - i * 0.1f,
+					-5), i, 0, mat);
 			this.birds.add(testBird);
 		}
 

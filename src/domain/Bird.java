@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Random;
 
 import com.jme3.material.Material;
-import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Line;
@@ -15,7 +14,7 @@ public class Bird {
 	private static final float BIRD_TOP_SPEED = 2f;
 	private static final float BIRD_TURN_SPEED = 1f;
 	private static final float BIRD_SWITCH_CHANCE_PER_SEC = 0.3f;
-	private static final float SEEK_DISTANCE = 0;
+	private static final float SEEK_DISTANCE = 0.65f;
 
 	private final float speed;
 	private final Geometry geometry;
@@ -48,8 +47,8 @@ public class Bird {
 	}
 
 	public void update(List<Bird> birds, float tpf) {
-		// seek(birds, tpf);
-		randomTurn(tpf);
+		seek(birds, tpf);
+		// randomTurn(tpf);
 		move(tpf);
 	}
 
@@ -76,11 +75,10 @@ public class Bird {
 					.getLocalTransform().getTranslation());
 
 			float turnValue = BIRD_TURN_SPEED
-					* ((difference.angleBetween(new Vector3f(0, 1, 0)) > 3.14f) ? 1
-							: -1) * tpf;
-			Quaternion quaternion = new Quaternion(new float[] { 0, 0,
-					turnValue });
-			// this.geometry.rotate(quaternion);
+					* 3
+					* ((difference.angleBetween(new Vector3f(0, 1, 0)) > 3.14f) ? -1
+							: 1) * tpf;
+			this.geometry.rotate(0, 0, turnValue);
 
 		} else {
 			randomTurn(tpf);
