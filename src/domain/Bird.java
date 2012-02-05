@@ -1,5 +1,6 @@
 package domain;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -12,10 +13,10 @@ import com.jme3.scene.shape.Line;
 
 public class Bird {
 
-	private static final float BIRD_TOP_SPEED = 1;
+	private static final float BIRD_TOP_SPEED = 1f;
 	private static final float BIRD_TURN_SPEED = 0.5f;
 	private static final float BIRD_SWITCH_CHANCE_PER_SEC = 0.3f;
-	private static final float SEEK_DISTANCE = 2;
+	private static final float SEEK_DISTANCE = 0;
 
 	private final float speed;
 	private final Geometry geometry;
@@ -53,33 +54,43 @@ public class Bird {
 	}
 
 	public void update(List<Bird> birds, float tpf) {
-		// seek(birds, tpf);
-		randomTurn(tpf);
+		seek(birds, tpf);
+		// randomTurn(tpf);
 		move(tpf);
 	}
 
 	private void seek(List<Bird> birds, float tpf) {
-		// List<Bird> neighbours = new ArrayList<>();
-		// for (Bird bird : birds) {
-		// if (!bird.equals(this)) {
-		// if (SEEK_DISTANCE > this.location.distance(bird.getLocation())) {
-		// neighbours.add(bird);
-		// }
-		// }
-		// }
-		// if (neighbours.size() > 0) {
-		// Vector3f averageLocation = Vector3f.ZERO;
-		// for (int i = 0; i < neighbours.size(); i++) {
-		// averageLocation.add(neighbours.get(i).getLocation());
-		// if (i > 0) {
-		// averageLocation.mult(0.5f);
-		// }
-		// }
-		// float angleToAverage = this.location.angleBetween(averageLocation);
-		// randomTurn(tpf);
-		// } else {
-		// randomTurn(tpf);
-		// }
+		List<Bird> neighbours = new ArrayList<Bird>();
+		for (Bird bird : birds) {
+			if (!bird.equals(this)) {
+				if (SEEK_DISTANCE > this.getLocation().distance(
+						bird.getLocation())) {
+					neighbours.add(bird);
+				}
+			}
+		}
+		if (neighbours.size() > 0) {
+			Vector3f averageDirection = new Vector3f();
+			for (int i = 0; i < neighbours.size(); i++) {
+				averageDirection.addLocal(neighbours.get(i).getGeometry()
+						.getLocalTransform().getTranslation());
+				if (i > 0) {
+					averageDirection.multLocal(0.5f);
+				}
+			}
+			Vector3f difference = averageDirection.subtract(this.getGeometry()
+					.getLocalTransform().getTranslation());
+
+			float turnValue = BIRD_TURN_SPEED
+					* ((difference.angleBetween(new Vector3f(0, 1, 0)) > 3.14f) ? 1
+							: -1) * tpf;
+			Quaternion quaternion = new Quaternion(new float[] { 0, 0,
+					turnValue });
+			// this.geometry.rotate(quaternion);
+
+		} else {
+			randomTurn(tpf);
+		}
 	}
 
 	private void randomTurn(float tpf) {

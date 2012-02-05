@@ -34,10 +34,10 @@ public class Main extends SimpleApplication {
 				"Common/MatDefs/Misc/Unshaded.j3md");
 		mat.setColor("Color", ColorRGBA.White);
 
-		this.birds = new ArrayList<>();
+		this.birds = new ArrayList<Bird>();
 		for (int i = 0; i < 100; i++) {
-			Bird testBird = new Bird(new Vector3f(0.5f - (i * 0.01f),
-					0.5f - (i * 0.01f), 0), new Quaternion(new float[] { 0, 0,
+			Bird testBird = new Bird(new Vector3f(0.0f - (i * 0.01f),
+					0.0f - (i * 0.01f), 0), new Quaternion(new float[] { 0, 0,
 					0.56f * i }), 0, mat);
 			this.birds.add(testBird);
 		}
