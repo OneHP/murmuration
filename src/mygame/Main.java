@@ -2,11 +2,11 @@ package mygame;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 
@@ -34,12 +34,11 @@ public class Main extends SimpleApplication {
 				"Common/MatDefs/Misc/Unshaded.j3md");
 		mat.setColor("Color", ColorRGBA.White);
 
-		Random random = new Random();
-
 		this.birds = new ArrayList<>();
 		for (int i = 0; i < 100; i++) {
-			Bird testBird = new Bird(new Vector3f(0, 0, 0), new Vector3f(0.1f,
-					0, 0), 0, mat);
+			Bird testBird = new Bird(new Vector3f(0.5f - (i * 0.01f),
+					0.5f - (i * 0.01f), 0), new Quaternion(new float[] { 0, 0,
+					0.56f * i }), 0, mat);
 			this.birds.add(testBird);
 		}
 
