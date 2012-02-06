@@ -1,9 +1,11 @@
 package domain;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.jme3.material.Material;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
@@ -11,16 +13,17 @@ import com.jme3.scene.shape.Line;
 
 public class Bird {
 
-	private static final float BIRD_TOP_SPEED = 2f;
-	private static final float BIRD_TURN_SPEED = 1f;
+	private static final float BIRD_TOP_SPEED = 1f;
+	private static final float BIRD_TURN_SPEED = 1.5f;
 	private static final float BIRD_SWITCH_CHANCE_PER_SEC = 0.3f;
-	private static final float SEEK_DISTANCE = 0.65f;
+	private static final float SEEK_DISTANCE = 2f;
 
 	private final float speed;
 	private final Geometry geometry;
 	private final Random random;
 	private float turnDirection;
 	private float tpfCount;
+	private final float id;
 
 	public Bird(Vector3f location, float direction, float speed,
 			Material material) {
@@ -32,6 +35,7 @@ public class Bird {
 		this.geometry.setLocalTranslation(location);
 		this.random = new Random();
 		this.turnDirection = 1;
+		this.id = this.random.nextFloat();
 	}
 
 	public Vector3f getLocation() {
@@ -53,31 +57,41 @@ public class Bird {
 	}
 
 	private void seek(List<Bird> birds, float tpf) {
-		List<Bird> neighbours = new ArrayList<Bird>();
-		for (Bird bird : birds) {
-			if (!bird.equals(this)) {
-				if (SEEK_DISTANCE > this.getLocation().distance(
-						bird.getLocation())) {
-					neighbours.add(bird);
-				}
-			}
-		}
-		if (neighbours.size() > 0) {
-			Vector3f averageDirection = new Vector3f();
-			for (int i = 0; i < neighbours.size(); i++) {
-				averageDirection.addLocal(neighbours.get(i).getGeometry()
-						.getLocalTransform().getTranslation());
-				if (i > 0) {
-					averageDirection.multLocal(0.5f);
-				}
-			}
-			Vector3f difference = averageDirection.subtract(this.getGeometry()
-					.getLocalTransform().getTranslation());
+		List<Bird> neighbours = Lists.newArrayList(Iterables.filter(birds,
+				new Predicate<Bird>() {
+					@Override
+					public boolean apply(Bird input) {
+						if (Bird.this.id == input.id) {
+							return false;
+						}
+						if (SEEK_DISTANCE < Bird.this.getLocation().distance(
+								input.getLocation())) {
+							return false;
+						}
+						Vector3f direction = input.getLocation().subtract(
+								Bird.this.getLocation());
+						float dot = direction
+								.normalize()
+								.subtract(
+										Bird.this.geometry.getLocalRotation()
+												.getRotationColumn(1, null))
+								.dot(Vector3f.UNIT_Y);
+						if (dot < 0) {
+							return false;
+						}
+						return true;
+					}
+				}));
 
-			float turnValue = BIRD_TURN_SPEED
-					* 3
-					* ((difference.angleBetween(new Vector3f(0, 1, 0)) > 3.14f) ? -1
-							: 1) * tpf;
+		if (neighbours.size() > 0) {
+			Vector3f direction = neighbours.get(0).getLocation()
+					.subtract(Bird.this.getLocation());
+
+			Vector3f change = direction.subtract(Bird.this.geometry
+					.getLocalRotation().getRotationColumn(1, null));
+
+			float turnValue = BIRD_TURN_SPEED * 3
+					* ((change.x * change.y < 0) ? -1 : 1) * tpf;
 			this.geometry.rotate(0, 0, turnValue);
 
 		} else {
