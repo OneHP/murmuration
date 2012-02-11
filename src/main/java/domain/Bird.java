@@ -86,24 +86,26 @@ public class Bird {
 				}));
 
 		if (neighbours.size() > 0) {
-			// drawIntention(Bird.this.getLocation(), neighbours.get(0)
-			// .getLocation());
+
+			Vector3f averageNeighbour = new Vector3f();
+			for (int i = 0; i < neighbours.size(); i++) {
+				averageNeighbour.addLocal(neighbours.get(i).getLocation());
+				if (i > 0) {
+					averageNeighbour.multLocal(0.5f);
+				}
+			}
+			// drawIntention(Bird.this.getLocation(), averageNeighbour);
 
 			Vector3f heading = Bird.this.geometry.getLocalRotation()
 					.getRotationColumn(1, null).normalize();
-			Vector3f direction = neighbours.get(0).getLocation()
-					.subtract(Bird.this.getLocation()).normalize();
+			Vector3f direction = averageNeighbour.subtract(
+					Bird.this.getLocation()).normalize();
 			Vector3f change = direction.subtract(heading).normalize();
-
-			// System.out.println("h: " + heading);
-			// System.out.println("d: " + direction);
-			// System.out.println("c: " + change);
 
 			boolean clockWise = heading.y * change.x > 0;
 
 			float turnValue = BIRD_TURN_SPEED * 1.5f * (clockWise ? -1 : 1)
 					* tpf;
-			// System.out.println("t: " + turnValue);
 
 			this.geometry.rotate(0, 0, turnValue);
 

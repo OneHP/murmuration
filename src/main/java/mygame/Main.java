@@ -6,6 +6,7 @@ import java.util.List;
 import com.jme3.app.SimpleApplication;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 
@@ -34,14 +35,13 @@ public class Main extends SimpleApplication {
 
 		this.birds = new ArrayList<Bird>();
 		for (int i = 0; i < 20; i++) {
-			Bird testBird = new Bird(new Vector3f(7 - i * 0.1f, 5 - i * 0.5f,
-					-10), i, 0, mat, this);
-			this.birds.add(testBird);
+			for (int j = 0; j < 20; j++) {
+				Bird testBird = new Bird(new Vector3f(4 - i * 0.3f,
+						3 - j * 0.2f, -5), FastMath.nextRandomFloat(), 0, mat,
+						this);
+				this.birds.add(testBird);
+			}
 		}
-		// Bird testBird = new Bird(new Vector3f(0, 0, -5), 0, 0, mat, this);
-		// this.birds.add(testBird);
-		// Bird testBird2 = new Bird(new Vector3f(0, -1, -5), 0, 0, mat, this);
-		// this.birds.add(testBird2);
 
 		for (Bird bird : this.birds) {
 			this.rootNode.attachChild(bird.getGeometry());
