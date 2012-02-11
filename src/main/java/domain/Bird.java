@@ -37,7 +37,7 @@ public class Bird {
 		this.geometry.rotate(0, 0, direction);
 		this.geometry.setLocalTranslation(location);
 		this.random = new Random();
-		this.turnDirection = 1;
+		this.turnDirection = -1;
 		this.id = this.random.nextFloat();
 		this.app = app;
 	}
@@ -55,7 +55,7 @@ public class Bird {
 	}
 
 	public void update(List<Bird> birds, float tpf) {
-		removeIntention();
+		// removeIntention();
 		seek(birds, tpf);
 		move(tpf);
 	}
@@ -86,32 +86,25 @@ public class Bird {
 				}));
 
 		if (neighbours.size() > 0) {
-			drawIntention(Bird.this.getLocation(), neighbours.get(0)
-					.getLocation());
+			// drawIntention(Bird.this.getLocation(), neighbours.get(0)
+			// .getLocation());
 
+			Vector3f heading = Bird.this.geometry.getLocalRotation()
+					.getRotationColumn(1, null).normalize();
 			Vector3f direction = neighbours.get(0).getLocation()
-					.subtract(Bird.this.getLocation());
+					.subtract(Bird.this.getLocation()).normalize();
+			Vector3f change = direction.subtract(heading).normalize();
 
-			Vector3f change = direction.subtract(Bird.this.geometry
-					.getLocalRotation().getRotationColumn(1, null));
+			// System.out.println("h: " + heading);
+			// System.out.println("d: " + direction);
+			// System.out.println("c: " + change);
 
-			boolean clockWise;
-			if (change.y > 0) {
-				if (change.x < 0) {
-					clockWise = true;
-				} else {
-					clockWise = false;
-				}
-			} else {
-				if (change.x < 0) {
-					clockWise = false;
-				} else {
-					clockWise = true;
-				}
-			}
+			boolean clockWise = heading.y * change.x > 0;
 
-			float turnValue = BIRD_TURN_SPEED * 1.5f * (clockWise ? 1 : -1)
+			float turnValue = BIRD_TURN_SPEED * 1.5f * (clockWise ? -1 : 1)
 					* tpf;
+			// System.out.println("t: " + turnValue);
+
 			this.geometry.rotate(0, 0, turnValue);
 
 		} else {
