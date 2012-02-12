@@ -34,11 +34,11 @@ public class Main extends SimpleApplication {
 		mat.setColor("Color", ColorRGBA.White);
 
 		this.birds = new ArrayList<Bird>();
-		for (int i = 0; i < 20; i++) {
-			for (int j = 0; j < 20; j++) {
+		for (int i = 0; i < 30; i++) {
+			for (int j = 0; j < 30; j++) {
 				Bird testBird = new Bird(new Vector3f(4 - i * 0.3f,
-						3 - j * 0.2f, -5), FastMath.nextRandomFloat(), 0, mat,
-						this);
+						3 - j * 0.2f, -15), FastMath.nextRandomFloat() * i * j,
+						0, mat, this);
 				this.birds.add(testBird);
 			}
 		}

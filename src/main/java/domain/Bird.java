@@ -1,11 +1,14 @@
 package domain;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
 import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Ordering;
 import com.jme3.app.SimpleApplication;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
@@ -18,7 +21,7 @@ public class Bird {
 	private static final float BIRD_TOP_SPEED = 1f;
 	private static final float BIRD_TURN_SPEED = 1.5f;
 	private static final float BIRD_SWITCH_CHANCE_PER_SEC = 0.3f;
-	private static final float SEEK_DISTANCE = 5f;
+	private static final float SEEK_DISTANCE = 2f;
 
 	private final float speed;
 	private final Geometry geometry;
@@ -81,14 +84,31 @@ public class Bird {
 						if (dot < 0) {
 							return false;
 						}
+						Vector3f otherHeading = input.getGeometry()
+								.getLocalRotation().getRotationColumn(1, null)
+								.normalize();
+						float withDot = otherHeading.dot(heading);
+						if (withDot < 0) {
+							return false;
+						}
 						return true;
 					}
 				}));
 
 		if (neighbours.size() > 0) {
 
+			neighbours = ImmutableList.copyOf(Ordering.from(
+					new Comparator<Bird>() {
+						@Override
+						public int compare(Bird o1, Bird o2) {
+							return Float.compare(Bird.this.getLocation()
+									.distance(o1.getLocation()), Bird.this
+									.getLocation().distance(o2.getLocation()));
+						}
+					}).sortedCopy(neighbours));
+
 			Vector3f averageNeighbour = new Vector3f();
-			for (int i = 0; i < neighbours.size(); i++) {
+			for (int i = 0; i < Math.min(neighbours.size(), 6); i++) {
 				averageNeighbour.addLocal(neighbours.get(i).getLocation());
 				if (i > 0) {
 					averageNeighbour.multLocal(0.5f);
@@ -104,8 +124,7 @@ public class Bird {
 
 			boolean clockWise = heading.y * change.x > 0;
 
-			float turnValue = BIRD_TURN_SPEED * 1.5f * (clockWise ? -1 : 1)
-					* tpf;
+			float turnValue = BIRD_TURN_SPEED * (clockWise ? -1 : 1) * tpf;
 
 			this.geometry.rotate(0, 0, turnValue);
 
