@@ -38,7 +38,7 @@ public class Main extends SimpleApplication {
 			for (int j = 0; j < 30; j++) {
 				Bird testBird = new Bird(new Vector3f(4 - i * 0.3f,
 						3 - j * 0.2f, -15), FastMath.nextRandomFloat() * i * j,
-						0, mat, this);
+						mat, this);
 				this.birds.add(testBird);
 			}
 		}

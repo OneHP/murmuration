@@ -18,12 +18,12 @@ import com.jme3.scene.shape.Line;
 
 public class Bird {
 
+	private static final float SPACING = 0.2f;
 	private static final float BIRD_TOP_SPEED = 1f;
 	private static final float BIRD_TURN_SPEED = 1.5f;
 	private static final float BIRD_SWITCH_CHANCE_PER_SEC = 0.3f;
 	private static final float SEEK_DISTANCE = 2f;
 
-	private final float speed;
 	private final Geometry geometry;
 	private final Random random;
 	private float turnDirection;
@@ -31,10 +31,8 @@ public class Bird {
 	private final float id;
 	private final SimpleApplication app;
 
-	public Bird(Vector3f location, float direction, float speed,
-			Material material, SimpleApplication app) {
-		super();
-		this.speed = speed;
+	public Bird(Vector3f location, float direction, Material material,
+			SimpleApplication app) {
 		this.geometry = new Geometry("bird", makeView(location));
 		this.geometry.setMaterial(material);
 		this.geometry.rotate(0, 0, direction);
@@ -65,50 +63,16 @@ public class Bird {
 
 	private void seek(List<Bird> birds, float tpf) {
 		List<Bird> neighbours = Lists.newArrayList(Iterables.filter(birds,
-				new Predicate<Bird>() {
-					@Override
-					public boolean apply(Bird input) {
-						if (Bird.this.id == input.id) {
-							return false;
-						}
-						if (SEEK_DISTANCE < Bird.this.getLocation().distance(
-								input.getLocation())) {
-							return false;
-						}
-						Vector3f direction = input.getLocation()
-								.subtract(Bird.this.getLocation()).normalize();
-						Vector3f heading = Bird.this.geometry
-								.getLocalRotation().getRotationColumn(1, null)
-								.normalize();
-						float dot = direction.dot(heading);
-						if (dot < 0) {
-							return false;
-						}
-						Vector3f otherHeading = input.getGeometry()
-								.getLocalRotation().getRotationColumn(1, null)
-								.normalize();
-						float withDot = otherHeading.dot(heading);
-						if (withDot < 0) {
-							return false;
-						}
-						return true;
-					}
-				}));
+				new NeighbourPredicate()));
 
 		if (neighbours.size() > 0) {
 
 			neighbours = ImmutableList.copyOf(Ordering.from(
-					new Comparator<Bird>() {
-						@Override
-						public int compare(Bird o1, Bird o2) {
-							return Float.compare(Bird.this.getLocation()
-									.distance(o1.getLocation()), Bird.this
-									.getLocation().distance(o2.getLocation()));
-						}
-					}).sortedCopy(neighbours));
+					new DistanceComparator()).sortedCopy(neighbours));
 
-			if (Bird.this.getLocation().distance(
-					neighbours.get(0).getLocation()) > 0.2f) {
+			if (freeSpaceAroundBird(neighbours)) {
+
+				// Work out the average position of our neighbours
 				Vector3f averageNeighbour = new Vector3f();
 				for (int i = 0; i < Math.min(neighbours.size(), 6); i++) {
 					averageNeighbour.addLocal(neighbours.get(i).getLocation());
@@ -118,16 +82,16 @@ public class Bird {
 				}
 				// drawIntention(Bird.this.getLocation(), averageNeighbour);
 
+				// Work out if we need to turn clockwise or counter-clockwise
 				Vector3f heading = Bird.this.geometry.getLocalRotation()
 						.getRotationColumn(1, null).normalize();
 				Vector3f direction = averageNeighbour.subtract(
 						Bird.this.getLocation()).normalize();
 				Vector3f change = direction.subtract(heading).normalize();
-
 				boolean clockWise = heading.y * change.x > 0;
 
+				// Apply the turn
 				float turnValue = BIRD_TURN_SPEED * (clockWise ? -1 : 1) * tpf;
-
 				this.geometry.rotate(0, 0, turnValue);
 
 			} else {
@@ -138,6 +102,7 @@ public class Bird {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private void drawIntention(Vector3f from, Vector3f to) {
 		Material mat = new Material(this.app.getAssetManager(),
 				"Common/MatDefs/Misc/Unshaded.j3md");
@@ -158,6 +123,7 @@ public class Bird {
 		this.app.getRootNode().attachChild(geometry3);
 	}
 
+	@SuppressWarnings("unused")
 	private void removeIntention() {
 		this.app.getRootNode().detachChildNamed(Float.toString(this.id));
 		this.app.getRootNode().detachChildNamed(Float.toString(this.id) + ":");
@@ -179,5 +145,67 @@ public class Bird {
 		Vector3f movement = this.geometry.getLocalRotation()
 				.getRotationColumn(1, null).mult(tpf * BIRD_TOP_SPEED);
 		this.geometry.move(movement);
+	}
+
+	private boolean freeSpaceAroundBird(List<Bird> neighbours) {
+		return Bird.this.getLocation()
+				.distance(neighbours.get(0).getLocation()) > SPACING;
+	}
+
+	/**
+	 * Ordering by distance from our bird, closest first
+	 */
+	private final class DistanceComparator implements Comparator<Bird> {
+		@Override
+		public int compare(Bird o1, Bird o2) {
+			return Float.compare(
+					Bird.this.getLocation().distance(o1.getLocation()),
+					Bird.this.getLocation().distance(o2.getLocation()));
+		}
+	}
+
+	/**
+	 * Determine whether the given bird is a neighbour of our bird
+	 */
+	private final class NeighbourPredicate implements Predicate<Bird> {
+		@Override
+		public boolean apply(Bird input) {
+			if (birdIsSame(input)) {
+				return false;
+			}
+			if (birdIsNotClose(input)) {
+				return false;
+			}
+			// Get the dot product of the direction of our bird to the neighbour
+			// and the heading of our bird to work out if the neighbour is in
+			// front of our bird
+			Vector3f direction = input.getLocation()
+					.subtract(Bird.this.getLocation()).normalize();
+			Vector3f heading = Bird.this.geometry.getLocalRotation()
+					.getRotationColumn(1, null).normalize();
+			float dot = direction.dot(heading);
+			if (dot < 0) {
+				return false;
+			}
+			// Get the dot product of the heading of our bird and the heading of
+			// the neighbour to work out if the neighbour is travelling in
+			// roughly the same direction as our bird
+			Vector3f otherHeading = input.getGeometry().getLocalRotation()
+					.getRotationColumn(1, null).normalize();
+			float withDot = otherHeading.dot(heading);
+			if (withDot < 0) {
+				return false;
+			}
+			return true;
+		}
+
+		private boolean birdIsNotClose(Bird input) {
+			return SEEK_DISTANCE < Bird.this.getLocation().distance(
+					input.getLocation());
+		}
+
+		private boolean birdIsSame(Bird input) {
+			return Bird.this.id == input.id;
+		}
 	}
 }
