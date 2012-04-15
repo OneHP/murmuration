@@ -19,4 +19,14 @@
 	    <version>11.0.1</version>
 	</dependency>
   </dependencies>
+  
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <version>2.4.0</version>
+      </plugin>
+    </plugins>
+  </reporting>
 </project>
