@@ -14,6 +14,7 @@ import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
+import com.jme3.scene.Mesh;
 import com.jme3.scene.shape.Line;
 
 public class Bird {
@@ -24,6 +25,8 @@ public class Bird {
 	private static final float BIRD_SWITCH_CHANCE_PER_SEC = 0.3f;
 	private static final float SEEK_DISTANCE = 2f;
 
+	private static final Mesh BIRD_MESH = new BirdMesh();
+
 	private final Geometry geometry;
 	private final Random random;
 	private float turnDirection;
@@ -33,7 +36,7 @@ public class Bird {
 
 	public Bird(Vector3f location, float direction, Material material,
 			SimpleApplication app) {
-		this.geometry = new Geometry("bird", makeView(location));
+		this.geometry = new Geometry("bird", BIRD_MESH);
 		this.geometry.setMaterial(material);
 		this.geometry.rotate(0, 0, direction);
 		this.geometry.setLocalTranslation(location);
@@ -45,10 +48,6 @@ public class Bird {
 
 	public Vector3f getLocation() {
 		return this.geometry.getLocalTranslation();
-	}
-
-	private Line makeView(Vector3f location) {
-		return new Line(Vector3f.ZERO, new Vector3f(0, 0.1f, 0));
 	}
 
 	public Geometry getGeometry() {
