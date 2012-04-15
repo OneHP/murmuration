@@ -11,6 +11,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 
 import domain.Bird;
+import domain.Pond;
 
 public class Main extends SimpleApplication {
 
@@ -29,16 +30,20 @@ public class Main extends SimpleApplication {
 		this.mouseInput.setCursorVisible(true);
 		this.inputManager.clearMappings();
 
-		Material mat = new Material(this.assetManager,
+		Material birdMaterial = new Material(this.assetManager,
 				"Common/MatDefs/Misc/Unshaded.j3md");
-		mat.setColor("Color", ColorRGBA.White);
+		birdMaterial.setColor("Color", ColorRGBA.White);
+
+		Material pondMaterial = new Material(this.assetManager,
+				"Common/MatDefs/Misc/Unshaded.j3md");
+		pondMaterial.setColor("Color", ColorRGBA.Blue);
 
 		this.birds = new ArrayList<Bird>();
 		for (int i = 0; i < 30; i++) {
 			for (int j = 0; j < 30; j++) {
 				Bird testBird = new Bird(new Vector3f(4 - i * 0.3f,
 						3 - j * 0.2f, -15), FastMath.nextRandomFloat() * i * j,
-						mat, this);
+						birdMaterial, this);
 				this.birds.add(testBird);
 			}
 		}
@@ -46,6 +51,9 @@ public class Main extends SimpleApplication {
 		for (Bird bird : this.birds) {
 			this.rootNode.attachChild(bird.getGeometry());
 		}
+
+		this.rootNode.attachChild(new Pond(new Vector3f(0, 0, -16),
+				pondMaterial).getGeometry());
 
 	}
 

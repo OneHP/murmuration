@@ -19,6 +19,7 @@ import com.jme3.scene.shape.Line;
 
 public class Bird {
 
+	private static final int NEIGHBOURS_TO_AVERAGE = 6;
 	private static final float SPACING = 0.2f;
 	private static final float BIRD_TOP_SPEED = 1f;
 	private static final float BIRD_TURN_SPEED = 1.5f;
@@ -73,7 +74,8 @@ public class Bird {
 
 				// Work out the average position of our neighbours
 				Vector3f averageNeighbour = new Vector3f();
-				for (int i = 0; i < Math.min(neighbours.size(), 6); i++) {
+				for (int i = 0; i < Math.min(neighbours.size(),
+						NEIGHBOURS_TO_AVERAGE); i++) {
 					averageNeighbour.addLocal(neighbours.get(i).getLocation());
 					if (i > 0) {
 						averageNeighbour.multLocal(0.5f);
